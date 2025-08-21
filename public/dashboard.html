@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servify Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#43049b',
+                        secondary: '#4cdb37',
+                        accent: '#4cdb37',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Integrated Header within Dashboard Content -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-secondary mb-8">
+            <div class="flex items-center justify-between">
+                <!-- Left: Bigger Logo -->
+                <div class="flex items-center">
+                    <img src="assets/ic_launcher.png" alt="Servify Logo" class="w-12 h-12 mr-4">
+                </div>
+                
+                <!-- Center: Interactive Toggle Switch -->
+                <div class="flex items-center">
+                    <button id="view-toggle" class="relative inline-flex h-10 w-32 items-center rounded-full bg-primary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-md hover:shadow-lg transform hover:scale-105" data-view="sales">
+                        <!-- Sales Text -->
+                        <span id="sales-text" class="absolute left-3 text-sm font-semibold text-white transition-all duration-300">Sales</span>
+                        
+                        <!-- Insights Text -->
+                        <span id="insights-text" class="absolute right-3 text-sm font-semibold text-gray-600 transition-all duration-300 opacity-0">Insights</span>
+                    </button>
+                </div>
+                
+                <!-- Right: Logout Button -->
+                <button id="logout-btn" class="flex items-center justify-center w-10 h-10 rounded-full bg-primary hover:bg-purple-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm hover:shadow-md transform hover:scale-105">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-secondary">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-primary/10 rounded-xl">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-center space-x-1" id="total-sales-trend">
+                        <span class="text-primary text-sm font-medium">+0%</span>
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wide">Total Sales</h3>
+                <p id="total-sales" class="text-3xl font-bold text-gray-900 mt-2">0</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-secondary">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-primary/10 rounded-xl">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-center space-x-1" id="total-revenue-trend">
+                        <span class="text-primary text-sm font-medium">+0%</span>
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wide">Total Revenue</h3>
+                <p id="total-revenue" class="text-3xl font-bold text-gray-900 mt-2">$0</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-secondary">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-primary/10 rounded-xl">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-center space-x-1" id="avg-order-value-trend">
+                        <span class="text-primary text-sm font-medium">+0%</span>
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wide">Average Order Value</h3>
+                <p id="avg-order-value" class="text-3xl font-bold text-gray-900 mt-2">$0</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-secondary">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-primary/10 rounded-xl">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex items-center space-x-1" id="total-orders-trend">
+                        <span class="text-primary text-sm font-medium">+0%</span>
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-gray-500 text-sm font-medium uppercase tracking-wide">Total Orders</h3>
+                <p id="total-orders" class="text-3xl font-bold text-gray-900 mt-2">0</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-lg mb-8 border border-secondary">
+            <h3 class="text-xl font-semibold text-gray-900 mb-6">Filters</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div>
+                    <label for="brand-filter" class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+                    <select id="brand-filter" class="w-full p-3 border border-secondary rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                        <option value="all">All Brands</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="subcategory-filter" class="block text-sm font-medium text-gray-700 mb-2">Product Category</label>
+                    <select id="subcategory-filter" class="w-full p-3 border border-secondary rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                        <option value="all">All Categories</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="time-filter" class="block text-sm font-medium text-gray-700 mb-2">Time Period</label>
+                    <select id="time-filter" class="w-full p-3 border border-secondary rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                        <option value="indefinite">All Time</option>
+                        <option value="daily">Last Day</option>
+                        <option value="weekly">Last Week</option>
+                        <option value="monthly">Last Month</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="store-filter" class="block text-sm font-medium text-gray-700 mb-2">Store</label>
+                    <select id="store-filter" class="w-full p-3 border border-secondary rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
+                        <option value="all">All Stores</option>
+                    </select>
+                </div>
+
+                <div class="flex items-end">
+                    <button id="reset-filters" class="w-full bg-primary hover:bg-purple-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md">
+                        Reset Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-secondary">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-gray-900">Sales by Category</h3>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <div class="w-3 h-3 bg-primary rounded-full"></div>
+                    <span>Sales Volume</span>
+                </div>
+            </div>
+            <div class="h-96">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
